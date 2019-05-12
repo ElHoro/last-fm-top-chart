@@ -1,0 +1,57 @@
+<div id="artistNameContainer" class="page-header">
+  <h2>
+  </h2>
+</div>
+<div id="artistBioContainer">
+
+</div>
+<div id="tracksContainer">
+  <h4>Top Tracks from this artist</h4>
+  <table id="tracksTable" class="table">
+    <tr>
+      <th>Name</th>
+      <th>Artist</th>
+    </tr>
+  </table>
+</div>
+
+<input type="hidden" value="{{mbid}}">
+<script type="text/javascript">
+let mbid = document.querySelector('input[type="hidden"]').value;
+
+let artistNameCont = document.querySelector('#artistNameContainer h2');
+let artistBioCont = document.querySelector('#artistBioContainer');
+let mainTable = document.querySelector('#tracksTable tbody');
+let mainTableTitle = document.querySelector('#tracksTable h1');
+
+  fetch(`../api/artist/${mbid}`, {
+  method: 'GET'
+}).then(res => res.json())
+  .then( data => {
+    let artistName = document.createTextNode(data[0].artist.name);
+    let artistBio = document.createTextNode(data[0].artist.bio.content);
+    artistNameCont.appendChild(artistName);
+    artistBioCont.appendChild(artistBio);
+
+    let topTracks = data[1].toptracks.track;
+    topTracks.forEach(track => {
+      let row = document.createElement('tr');
+      let trackName = document.createTextNode(track.name);
+      let artistName = document.createTextNode(track.artist.name);
+      let nameCont = document.createElement('td');
+      let artistCont = document.createElement('td');
+      let link = document.createElement('a');
+      let anchor = `/artist/${track.artist.mbid}`;
+      link.setAttribute('href', anchor);
+      link.appendChild(artistName);
+      artistCont.appendChild(link);
+
+      nameCont.appendChild(trackName);
+
+      row.appendChild(nameCont);
+      row.appendChild(artistCont);
+      mainTable.appendChild(row);
+    });
+  });
+
+</script>
